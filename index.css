@@ -58,6 +58,7 @@ nav a:hover {
   font-size: 14px;
   color: #5a6c7d;
   white-space: nowrap;
+  cursor: pointer;
 }
 
 /* ensure pseudo-element is removed if present */
@@ -487,32 +488,52 @@ nav a:hover {
     font-weight: 600;
 }
 
+.remove-item-btn,
 .remove-btn {
-    background: none;
-    border: none;
-    color: #ff6b9d;
-    cursor: pointer;
-    font-size: 20px;
-    transition: transform 0.2s;
+  display: inline-block;
+  padding: 8px 12px;
+  background: #ff6b6b;           /* red remove color */
+  color: #fff;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1;
+  transition: background .15s ease, transform .12s ease, box-shadow .12s ease;
+  box-shadow: 0 6px 14px rgba(255, 107, 107, 0.12);
 }
 
+/* slightly different sizing for the compact × button inside cart */
+.cart-item .remove-btn {
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+/* hover / active states */
+.remove-item-btn:hover,
 .remove-btn:hover {
-    transform: scale(1.2);
+  background: #ff4a4a;
+  transform: translateY(-2px);
 }
 
-.total-section {
-    display: flex;
-    justify-content: space-between;
-    padding: 20px;
-    background: #fafafa;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 18px;
-    margin-bottom: 30px;
+.remove-item-btn:active,
+.remove-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 8px rgba(255, 107, 107, 0.12);
 }
 
-.total-price {
-    color: #3b9ff8;
+/* ensure service-item actions sit nicely */
+.service-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* keep add button visible inline when shown */
+.service-item .add-item-btn {
+  display: inline-block;
 }
 
 .booking-form h4 {
