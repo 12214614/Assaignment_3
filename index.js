@@ -1,7 +1,9 @@
 let cart = [];
 let cartCounter = 1;
 
-function addToCart(serviceName, price) {
+function addToCart(serviceName, price, btn) {
+    // support both inline-pass (this) and legacy event
+    const button = btn || (typeof event !== 'undefined' && event.target.closest('.add-item-btn'));
     const item = {
         id: cartCounter++,
         name: serviceName,
@@ -11,23 +13,53 @@ function addToCart(serviceName, price) {
     cart.push(item);
     updateCart();
     
-    // Show success feedback
-    const button = event.target.closest('.add-item-btn');
-    const originalText = button.innerHTML;
-    button.innerHTML = '✓ Added';
-    button.style.background = '#7ed957';
-    button.style.color = 'white';
+    // feedback on the add button
+    if (button) {
+        const originalText = button.innerHTML;
+        button.innerHTML = '✓ Added';
+        button.style.background = '#7ed957';
+        button.style.color = 'white';
+        // hide the add button after short feedback
+        setTimeout(() => {
+            button.style.display = 'none';
+            button.innerHTML = originalText;
+            button.style.background = '';
+            button.style.color = '';
+        }, 700);
     
-    setTimeout(() => {
-        button.innerHTML = originalText;
-        button.style.background = '';
-        button.style.color = '';
-    }, 1000);
+        // show or create remove button inside same .service-item
+        const container = button.closest('.service-item');
+        if (container) {
+            let removeBtn = container.querySelector('.remove-item-btn');
+            if (!removeBtn) {
+                removeBtn = document.createElement('button');
+                removeBtn.className = 'remove-item-btn';
+                removeBtn.textContent = 'Remove';
+                removeBtn.style.marginLeft = '8px';
+                removeBtn.onclick = () => removeFromCart(item.id, removeBtn);
+                button.after(removeBtn);
+            } else {
+                removeBtn.style.display = '';
+                removeBtn.onclick = () => removeFromCart(item.id, removeBtn);
+            }
+        }
+    }
 }
 
-function removeFromCart(itemId) {
+function removeFromCart(itemId, btn) {
+    // remove from cart data
     cart = cart.filter(item => item.id !== itemId);
     updateCart();
+
+    // toggle buttons in DOM
+    const removeBtn = btn || (typeof event !== 'undefined' && event.target.closest('.remove-item-btn'));
+    const container = removeBtn ? removeBtn.closest('.service-item') : null;
+    if (container) {
+        const addBtn = container.querySelector('.add-item-btn');
+        if (addBtn) addBtn.style.display = ''; // show add button again
+        // remove the remove button element
+        if (removeBtn) removeBtn.remove();
+    }
 }
 
 function updateCart() {
@@ -53,7 +85,7 @@ function updateCart() {
                     <span class="item-number">${index + 1}</span>
                     <span class="item-name">${item.name}</span>
                     <span class="item-price">₹${item.price}</span>
-                    <button class="remove-btn" onclick="removeFromCart(${item.id})">×</button>
+                    <button class="remove-btn" onclick="removeFromCart(${item.id}, this)">×</button>
                 </div>
             `;
             total += item.price;
